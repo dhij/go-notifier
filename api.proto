@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package notifier;
+
+option go_package = "github.com/dhij/go-notifier/notifier";
+
+
+message EnqueueNotificationEventReq {
+  string user_uuid = 1;
+  string message = 2;
+}
+
+message EnqueueNotificationEventRes {}
+
+message StreamNotificationEventsReq {}
+
+message StreamNotificationEventsRes {
+  NotificationEvent event = 1;
+}
+
+message NotificationEvent {
+  string message = 1;
+  string follower_url = 2;
+}
+
+service Notifier {
+  rpc EnqueueNotificationEvent (EnqueueNotificationEventReq) returns (EnqueueNotificationEventRes);
+  rpc StreamNotificationEvents (StreamNotificationEventsReq) returns (stream StreamNotificationEventsRes);
+}
