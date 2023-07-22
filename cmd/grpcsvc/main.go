@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"os"
 
 	"github.com/dhij/go-notifier/internal/grpcsvc"
 	_ "github.com/go-sql-driver/mysql"
@@ -13,12 +12,8 @@ import (
 func main() {
 	var (
 		dbDriver = "mysql"
-		dbSource = os.Getenv("DB_SOURCE")
+		dbSource = "root:password@tcp(mysql:3306)/notifier_db"
 	)
-
-	if dbSource == "" {
-		dbSource = "root:password@tcp(localhost:33060)/notifier_db"
-	}
 
 	db, err := sql.Open(dbDriver, dbSource)
 	if err != nil {
