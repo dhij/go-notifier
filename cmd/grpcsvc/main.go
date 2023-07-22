@@ -4,17 +4,22 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"os"
 
 	"github.com/dhij/go-notifier/internal/grpcsvc"
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const (
-	dbDriver = "mysql"
-	dbSource = "root:password@tcp(localhost:33060)/notifier_db"
-)
-
 func main() {
+	var (
+		dbDriver = "mysql"
+		dbSource = os.Getenv("DB_SOURCE")
+	)
+
+	if dbSource == "" {
+		dbSource = "root:password@tcp(localhost:33060)/notifier_db"
+	}
+
 	db, err := sql.Open(dbDriver, dbSource)
 	if err != nil {
 		log.Fatalf("connecting to MySQL: %s", err)

@@ -2,24 +2,29 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/dhij/go-notifier"
 	apisvc "github.com/dhij/go-notifier/notifier_apisvc"
-	"github.com/ianschenck/envflag"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
 	var (
-		apiAddr = envflag.String("LISTEN_ADDR", "0.0.0.0:9090", "address where the docrapi should be served")
-		svcAddr = envflag.String("SVC_ADDR", "0.0.0.0:9091", "address where the docrsvc is listening")
+		apiAddr = "0.0.0.0:9090"
+		svcAddr = os.Getenv("SVC_ADDR")
 	)
+
+	if svcAddr == "" {
+		svcAddr = "0.0.0.0:9091"
+	}
 
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
-	conn, err := grpc.Dial(*svcAddr, opts...)
+
+	conn, err := grpc.Dial(svcAddr, opts...)
 	if err != nil {
 		log.Fatal("connecting to grpc server:", err)
 	}
@@ -29,5 +34,5 @@ func main() {
 
 	server := apisvc.NewServer(client)
 	server.InitRouter()
-	server.Start(*apiAddr)
+	server.Start(apiAddr)
 }

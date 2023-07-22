@@ -1,0 +1,33 @@
+---
+version: '3.4'
+services:
+  mysql:
+    platform: linux/amd64
+    image: mysql:5.7-debian
+    expose:
+      - "3306"
+    ports:
+      - "33060:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_HOST: "%"
+  grpcsvc:
+    build:
+      context: .
+      dockerfile: ./cmd/grpcsvc/Dockerfile
+    ports:
+      - "9091:9091"
+    command: grpcsvc
+    depends_on:
+      - mysql
+  apisvc:
+    build:
+      context: .
+      dockerfile: ./cmd/apisvc/Dockerfile
+    ports:
+      - "9090:9090"
+    environment:
+      SVC_ADDR: "grpcsvc:9091"
+    command: apisvc
+    depends_on:
+      - mysql
